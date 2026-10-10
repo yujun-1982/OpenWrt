@@ -9,10 +9,17 @@ APK_DIR="${ROOT_DIR}/local-packages"
 mkdir -p "${ARTIFACT_DIR}"
 exec > >(tee -a "${ARTIFACT_DIR}/build.log") 2>&1
 die(){ echo "ERROR: $*" >&2; exit 1; }
-for f in configs/x86_64.config files/etc/uci-defaults/99-custom-settings local-packages/luci-app-openclash-1.0.0-r1.apk local-packages/ninjadesktop-lite-1.0.4-x86_64.apk; do
+for f in configs/x86_64.config files/etc/uci-defaults/99-custom-settings local-packages/luci-app-openclash-1.0.0-r1.apk local-packages/ninjadesktop-lite-1.0.4-x86_64.apk.part01 local-packages/ninjadesktop-lite-1.0.4-x86_64.apk.part02; do
   [[ -f "${ROOT_DIR}/$f" ]] || die "Required file missing: $f"
 done
-(cd "${APK_DIR}" && sha256sum *.apk) | tee "${ARTIFACT_DIR}/local-apk-sha256.txt"
+
+# Reassemble the user-supplied NinjaDesktop APK without modifying its bytes.
+NINJA_APK="${APK_DIR}/ninjadesktop-lite-1.0.4-x86_64.apk"
+cat "${NINJA_APK}.part01" "${NINJA_APK}.part02" > "${NINJA_APK}"
+EXPECTED_NINJA_SHA256="753393c796c668d9064c51c0a4f97e0fb6379df776c2302ae1d0edcf6807f91e"
+ACTUAL_NINJA_SHA256="$(sha256sum "${NINJA_APK}" | awk '{print $1}')"
+[[ "${ACTUAL_NINJA_SHA256}" == "${EXPECTED_NINJA_SHA256}" ]] || die "Reassembled NinjaDesktop APK SHA-256 mismatch: ${ACTUAL_NINJA_SHA256}"
+(cd "${APK_DIR}" && sha256sum luci-app-openclash-1.0.0-r1.apk ninjadesktop-lite-1.0.4-x86_64.apk) | tee "${ARTIFACT_DIR}/local-apk-sha256.txt"
 if [[ ! -d "${SOURCE_DIR}/.git" ]]; then
   git clone --depth=1 --branch "${OPENWRT_REF}" https://github.com/openwrt/openwrt.git "${SOURCE_DIR}"
 else
