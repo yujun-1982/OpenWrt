@@ -42,6 +42,7 @@ SOFTETHER_LUCI_DIR="package/feeds/luci/luci-app-softether"
 grep -q 'LUCI_TITLE:=Softether management application' "${SOFTETHER_LUCI_DIR}/Makefile" || die "Unexpected SoftEther LuCI package Makefile at ${SOFTETHER_LUCI_DIR}/Makefile."
 cp "${ROOT_DIR}/configs/x86_64.config" .config
 make defconfig
+mkdir -p files/etc/uci-defaults
 install -m 0755 "${ROOT_DIR}/files/etc/uci-defaults/99-custom-settings" files/etc/uci-defaults/99-custom-settings
 make -j"${JOBS}" tools/install toolchain/install target/compile package/compile
 make package/install
