@@ -1,0 +1,4 @@
+# Generated build output
+/openwrt/
+/artifacts/
+/.config
