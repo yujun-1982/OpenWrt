@@ -14,14 +14,15 @@ This repository builds an OpenWrt 25.12 x86_64 generic SquashFS image for legacy
 
 ## Required custom APKs
 
-The build expects these exact user-provided files under `local-packages/`:
+The build expects these user-provided files under `local-packages/`:
 
 - `luci-app-openclash-1.0.0-r1.apk`
-- `ninjadesktop-lite-1.0.4-x86_64.apk`
+- `ninjadesktop-lite-1.0.4-x86_64.apk.part01`
+- `ninjadesktop-lite-1.0.4-x86_64.apk.part02`
 
-They are custom packages and must not be replaced with public downloads. The build script attempts to add them to the staged root filesystem before the target image is assembled. The build must fail rather than silently treating a copied APK file as an installed package.
+The NinjaDesktop APK is split only to fit GitHub's browser upload limit. The build script concatenates the two parts in order and verifies the original SHA-256 before using it. Do not replace these custom packages with public downloads or rename the files. The build script attempts to add the reconstructed APKs to the staged root filesystem before the target image is assembled; the build must fail if reconstruction or installation fails.
 
-**Before uploading the APKs, change this repository to Private** if you do not intend to publish those binaries. Then open `local-packages/` in GitHub and use **Add file → Upload files** to upload both exact APKs. Keep the filenames unchanged.
+The repository is currently public, so these custom binaries are publicly accessible. To upload or replace the files, open `local-packages/` and use **Add file → Upload files**. Keep all filenames unchanged.
 
 ## Run a build
 
