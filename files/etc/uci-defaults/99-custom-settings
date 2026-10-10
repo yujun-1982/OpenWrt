@@ -1,0 +1,16 @@
+#!/bin/sh
+# Applied once on first boot. This only configures networking/firewall;
+# local APK packages are installed during the image build, not here.
+set -eu
+
+uci -q batch <<'EOF'
+set network.lan.proto='static'
+set network.lan.ipaddr='10.10.10.2'
+set network.lan.netmask='255.255.255.0'
+set firewall.@defaults[0].flow_offloading='1'
+set firewall.@defaults[0].flow_offloading_hw='0'
+commit network
+commit firewall
+EOF
+
+exit 0
