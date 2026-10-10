@@ -36,8 +36,10 @@ clone_app https://github.com/jerrykuku/luci-theme-argon.git package/third-party/
 ./scripts/feeds update -a
 ./scripts/feeds install -a
 SOFTETHER_LUCI_DIR="package/feeds/luci/luci-app-softether"
-[[ -d "${SOFTETHER_LUCI_DIR}" ]] || die "SoftEther LuCI package was not installed from the LuCI feed."
-grep -Rqs 'define Package/luci-app-softether' "${SOFTETHER_LUCI_DIR}" || die "SoftEther package definition not found in ${SOFTETHER_LUCI_DIR}."
+[[ -f "${SOFTETHER_LUCI_DIR}/Makefile" ]] || die "SoftEther LuCI Makefile was not installed from the LuCI feed."
+# LuCI applications use LUCI_TITLE and include luci.mk; they do not declare
+# define Package/luci-app-softether directly in their Makefile.
+grep -q 'LUCI_TITLE:=Softether management application' "${SOFTETHER_LUCI_DIR}/Makefile" || die "Unexpected SoftEther LuCI package Makefile at ${SOFTETHER_LUCI_DIR}/Makefile."
 cp "${ROOT_DIR}/configs/x86_64.config" .config
 make defconfig
 install -m 0755 "${ROOT_DIR}/files/etc/uci-defaults/99-custom-settings" files/etc/uci-defaults/99-custom-settings
