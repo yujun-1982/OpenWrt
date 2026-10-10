@@ -35,8 +35,9 @@ clone_app https://github.com/sirpdboy/luci-app-timecontrol.git package/third-par
 clone_app https://github.com/jerrykuku/luci-theme-argon.git package/third-party/luci-theme-argon
 ./scripts/feeds update -a
 ./scripts/feeds install -a
-[[ -d luci/applications/luci-app-softether ]] || die "SoftEther LuCI source path not found on selected OpenWrt ref."
-grep -Rqs 'define Package/luci-app-softether' luci/applications/luci-app-softether || die "SoftEther package definition not found."
+SOFTETHER_LUCI_DIR="package/feeds/luci/luci-app-softether"
+[[ -d "${SOFTETHER_LUCI_DIR}" ]] || die "SoftEther LuCI package was not installed from the LuCI feed."
+grep -Rqs 'define Package/luci-app-softether' "${SOFTETHER_LUCI_DIR}" || die "SoftEther package definition not found in ${SOFTETHER_LUCI_DIR}."
 cp "${ROOT_DIR}/configs/x86_64.config" .config
 make defconfig
 install -m 0755 "${ROOT_DIR}/files/etc/uci-defaults/99-custom-settings" files/etc/uci-defaults/99-custom-settings
