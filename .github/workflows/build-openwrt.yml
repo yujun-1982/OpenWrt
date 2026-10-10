@@ -8,13 +8,6 @@ on:
         required: true
         default: "openwrt-25.12"
         type: string
-  push:
-    paths:
-      - "configs/**"
-      - "files/**"
-      - "scripts/**"
-      - "local-packages/**"
-      - ".github/workflows/build-openwrt.yml"
 
 permissions:
   contents: read
