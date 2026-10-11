@@ -50,7 +50,8 @@ ROOTFS="$(find build_dir -maxdepth 3 -type d \( -name root-x86 -o -name root-x86
 [[ -n "${ROOTFS}" ]] || die "Staged rootfs not found after package/install."
 APK_TOOL="${SOURCE_DIR}/staging_dir/host/bin/apk"
 [[ -x "${APK_TOOL}" ]] || die "Host apk tool not found."
-"${APK_TOOL}" --root "${ROOTFS}" add --allow-untrusted --no-network "${APK_DIR}/luci-app-openclash-1.0.0-r1.apk" "${APK_DIR}/ninjadesktop-lite-1.0.4-x86_64.apk"
+# APK post-install hooks use unshare, which GitHub-hosted runners may forbid. Install package payloads/database without running hooks in the build container.
+"${APK_TOOL}" --root "${ROOTFS}" add --allow-untrusted --no-network --no-scripts "${APK_DIR}/luci-app-openclash-1.0.0-r1.apk" "${APK_DIR}/ninjadesktop-lite-1.0.4-x86_64.apk"
 "${APK_TOOL}" --root "${ROOTFS}" info | tee "${ARTIFACT_DIR}/installed-packages.txt"
 grep -Eiq openclash "${ARTIFACT_DIR}/installed-packages.txt" || die "OpenClash package missing from APK database."
 grep -Eiq ninjadesktop "${ARTIFACT_DIR}/installed-packages.txt" || die "NinjaDesktop package missing from APK database."
